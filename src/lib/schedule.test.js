@@ -6,7 +6,7 @@ import { emptyState, markDone, undo, logTemp, startNow, skipTempering, skip } fr
 // Thanksgiving 2026, local time.
 const at = (h, m = 0) => new Date(2026, 10, 26, h, m, 0, 0).getTime();
 const MEAL = at(16, 0);
-const base = () => ({ ...emptyState(), mealTime: MEAL });
+const base = (searMethod = 'grill') => ({ ...emptyState(), mealTime: MEAL, searMethod });
 const step = (sched, id) => sched.steps.find((s) => s.id === id);
 const clock = (t) => {
   const d = new Date(t);
@@ -14,25 +14,46 @@ const clock = (t) => {
 };
 
 describe('worked example: meal at 4:00 PM, on plan', () => {
-  const s = computeSchedule(base(), at(9, 0));
-  it('matches the milestone table', () => {
-    expect(clock(step(s, 'temper').dueAt)).toBe('11:00');
-    expect(clock(step(s, 'oven-on').dueAt)).toBe('11:25');
-    expect(clock(step(s, 'oven-in').dueAt)).toBe('11:45');
-    expect(clock(step(s, 'check-90').dueAt)).toBe('13:15');
-    expect(clock(s.projectedPull)).toBe('14:45');
-    expect(clock(step(s, 'skillet').dueAt)).toBe('15:00');
-    expect(clock(step(s, 'roux').dueAt)).toBe('15:10');
-    expect(clock(s.searAt)).toBe('15:40');
-    expect(clock(step(s, 'crust').dueAt)).toBe('15:48');
-    expect(clock(step(s, 'carve').dueAt)).toBe('15:52');
-    expect(clock(step(s, 'serve').dueAt)).toBe('16:00');
-    expect(clock(s.projectedMeal)).toBe('16:00');
-    expect(s.restMin).toBe(55);
-    expect(s.warnings).toEqual([]);
+  for (const method of ['grill', 'oven']) {
+    const s = computeSchedule(base(method), at(9, 0));
+    it(`matches the milestone table (${method} sear)`, () => {
+      expect(clock(step(s, 'temper').dueAt)).toBe('11:00');
+      expect(clock(step(s, 'oven-on').dueAt)).toBe('11:25');
+      expect(clock(step(s, 'oven-in').dueAt)).toBe('11:45');
+      expect(clock(step(s, 'check-90').dueAt)).toBe('13:15');
+      expect(clock(s.projectedPull)).toBe('14:45');
+      expect(clock(step(s, 'roux').dueAt)).toBe('15:10');
+      expect(clock(s.searAt)).toBe('15:40');
+      expect(clock(step(s, 'sear').dueAt)).toBe('15:40');
+      expect(clock(step(s, 'crust').dueAt)).toBe('15:48');
+      expect(clock(step(s, 'carve').dueAt)).toBe('15:52');
+      expect(clock(step(s, 'serve').dueAt)).toBe('16:00');
+      expect(clock(s.projectedMeal)).toBe('16:00');
+      expect(s.restMin).toBe(55);
+      expect(s.warnings).toEqual([]);
+    });
+    it(`has nothing due before the first step (${method} sear)`, () => {
+      expect(s.steps.filter((x) => x.status === 'due' || x.status === 'overdue')).toEqual([]);
+    });
+  }
+  it('grill: preheat at 3:05 PM, no oven skillet step, no single turn step', () => {
+    const s = computeSchedule(base('grill'), at(9, 0));
+    expect(clock(step(s, 'grill-preheat').dueAt)).toBe('15:05');
+    expect(step(s, 'skillet')).toBeUndefined();
+    expect(step(s, 'turn')).toBeUndefined();
+    expect(step(s, 'sear').title).toMatch(/grill/);
+    expect(step(s, 'grill-preheat').dueAt).toBeLessThan(step(s, 'roux').dueAt);
   });
-  it('has nothing due before the first step', () => {
-    expect(s.steps.filter((x) => x.status === 'due' || x.status === 'overdue')).toEqual([]);
+  it('grill: no step mentions a 500 F oven or the vent fan', () => {
+    const s = computeSchedule(base('grill'), at(9, 0));
+    const text = s.steps.map((x) => `${x.title} ${x.detail}`).join(' ');
+    expect(text).not.toMatch(/500 F|oven to 500|vent fan/i);
+  });
+  it('oven: skillet in at 3:00 PM and a turn at 3:44 PM, no grill preheat', () => {
+    const s = computeSchedule(base('oven'), at(9, 0));
+    expect(clock(step(s, 'skillet').dueAt)).toBe('15:00');
+    expect(clock(step(s, 'turn').dueAt)).toBe('15:44');
+    expect(step(s, 'grill-preheat')).toBeUndefined();
   });
   it('marks a step due at its time and overdue 2 minutes later', () => {
     expect(step(computeSchedule(base(), at(11, 0)), 'temper').status).toBe('due');
@@ -41,15 +62,15 @@ describe('worked example: meal at 4:00 PM, on plan', () => {
   });
 });
 
-function roast(pullAt) {
-  let st = markDone(base(), 'oven-in', at(11, 45));
+function roast(pullAt, method = 'grill') {
+  let st = markDone(base(method), 'oven-in', at(11, 45));
   st = markDone(st, 'pull', pullAt);
   return st;
 }
 
 describe('worked example: slow roast (3 h 35 min)', () => {
-  const s = computeSchedule(roast(at(15, 20)), at(15, 21));
-  it('slides the sear and meal later', () => {
+  for (const method of ['grill', 'oven']) it(`slides the sear and meal later (${method} sear)`, () => {
+    const s = computeSchedule(roast(at(15, 20), method), at(15, 21));
     expect(clock(s.projectedPull)).toBe('15:20');
     expect(s.restMin).toBe(40);
     expect(clock(s.searAt)).toBe('16:00');
@@ -59,8 +80,8 @@ describe('worked example: slow roast (3 h 35 min)', () => {
 });
 
 describe('worked example: fast roast (2 h 15 min)', () => {
-  const s = computeSchedule(roast(at(14, 0)), at(14, 1));
-  it('keeps the meal and offers an earlier one', () => {
+  for (const method of ['grill', 'oven']) it(`keeps the meal and offers an earlier one (${method} sear)`, () => {
+    const s = computeSchedule(roast(at(14, 0), method), at(14, 1));
     expect(s.restMin).toBe(100);
     expect(clock(s.searAt)).toBe('15:40');
     expect(clock(s.projectedMeal)).toBe('16:00');
@@ -79,7 +100,7 @@ describe('worked example: fast roast (2 h 15 min)', () => {
 
 describe('anchors and gating', () => {
   it('times steps after the sear from the actual sear start', () => {
-    let st = roast(at(14, 45));
+    let st = roast(at(14, 45), 'oven');
     st = markDone(st, 'sear', at(15, 43));
     const s = computeSchedule(st, at(15, 44));
     expect(clock(step(s, 'turn').dueAt)).toBe('15:47');
@@ -90,10 +111,12 @@ describe('anchors and gating', () => {
     const s = computeSchedule(roast(at(14, 45)), at(14, 50));
     expect(step(s, 'get-ready').status).toBe('done');
   });
-  it('never brings the skillet step due while the roast is in the oven', () => {
-    const st = markDone(base(), 'oven-in', at(11, 45));
+  it('never brings the skillet or grill step due while the roast is in the oven', () => {
+    const st = markDone(base('oven'), 'oven-in', at(11, 45));
     const s = computeSchedule(st, at(15, 30));
     expect(step(s, 'skillet').status).toBe('pending');
+    const g = computeSchedule(markDone(base('grill'), 'oven-in', at(11, 45)), at(15, 30));
+    expect(step(g, 'grill-preheat').status).toBe('pending');
     expect(step(s, 'roux').status).toBe('pending');
   });
   it('slides the projected meal when the roast is still in past its projection', () => {

@@ -258,3 +258,4 @@ body { background: radial-gradient(ellipse at top, #f8f0df 0%, var(--parchment) 
 .seg + .seg { border-left: 1.5px solid var(--burgundy); }
 .seg.on { background: var(--burgundy); color: #fff; }
 .seg:disabled { opacity: 0.6; cursor: default; }
+.sear-timer .face { display: block; font-family: var(--serif); font-size: 30px; margin-top: 4px; }

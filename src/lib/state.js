@@ -15,7 +15,7 @@ export function emptyState() {
     checklist: {},
     soundOn: true,
     dayBeforeChecked: false,
-    searMethod: 'oven',
+    searMethod: 'grill',
   };
 }
 

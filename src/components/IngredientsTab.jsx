@@ -1,14 +1,16 @@
 import { useState } from 'react';
-import { INGREDIENT_GROUPS, ALL_INGREDIENT_IDS } from '../data/ingredients.js';
+import { groupsFor } from '../data/ingredients.js';
 
-export default function IngredientsTab({ checklist, toggle, clearAll }) {
+export default function IngredientsTab({ searMethod, checklist, toggle, clearAll }) {
   const [confirm, setConfirm] = useState(false);
-  const count = ALL_INGREDIENT_IDS.filter((id) => checklist[id]).length;
+  const groups = groupsFor(searMethod || 'grill');
+  const ids = groups.flatMap((g) => g.items.map((i) => i.id));
+  const count = ids.filter((id) => checklist[id]).length;
   return (
     <section className="ingredients">
       <div className="ing-head">
         <h2>Ingredients</h2>
-        <p className="count">{count} of {ALL_INGREDIENT_IDS.length} on hand</p>
+        <p className="count">{count} of {ids.length} on hand</p>
         {!confirm ? (
           <button className="btn" onClick={() => setConfirm(true)} disabled={count === 0}>Clear All</button>
         ) : (
@@ -19,7 +21,7 @@ export default function IngredientsTab({ checklist, toggle, clearAll }) {
         )}
       </div>
       <div className="ing-groups">
-        {INGREDIENT_GROUPS.map((g) => {
+        {groups.map((g) => {
           const have = g.items.filter((i) => checklist[i.id]).length;
           return (
             <div key={g.group} className="card ing-group">

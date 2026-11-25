@@ -31,10 +31,18 @@ export const INGREDIENT_GROUPS = [
       { id: 'instant-read', name: 'Instant-read thermometer', amount: '' },
       { id: 'skillet', name: '12 inch cast iron skillet', amount: '' },
       { id: 'saucepan', name: 'Saucepan and whisk', amount: '' },
-      { id: 'foil-mitts', name: 'Foil, oven mitts, and a towel for the skillet handle', amount: '' },
+      { id: 'foil-towel', name: 'Foil and a towel for the skillet handle', amount: '' },
+      { id: 'mitts', name: 'Oven mitts', amount: '' },
+      { id: 'grill', name: 'Grill, with enough fuel', amount: '', only: 'grill' },
+      { id: 'tongs', name: 'Long tongs', amount: '' },
+      { id: 'grill-gloves', name: 'Heavy mitts or grill gloves', amount: '', only: 'grill' },
       { id: 'board-knife', name: 'Carving board and knife', amount: '' },
     ],
   },
 ];
+
+export function groupsFor(searMethod) {
+  return INGREDIENT_GROUPS.map((g) => ({ ...g, items: g.items.filter((i) => !i.only || i.only === searMethod) }));
+}
 
 export const ALL_INGREDIENT_IDS = INGREDIENT_GROUPS.flatMap((g) => g.items.map((i) => i.id));

@@ -7,6 +7,7 @@ import { defaultMealTime, clockTime } from './lib/format.js';
 import { unlockAudio, audioReady, playChime } from './lib/chime.js';
 import { requestWakeLock, isAwake, isSupported as wakeSupported, onWakeChange } from './lib/wakeLock.js';
 import { checkAlerts } from './lib/alerts.js';
+import { searFace } from './lib/sear.js';
 import TabBar from './components/TabBar.jsx';
 import HomeTab from './components/HomeTab.jsx';
 import NowTab from './components/NowTab.jsx';
@@ -63,6 +64,26 @@ export default function App() {
       setTimeout(() => setFlash(false), 1600);
     }
   }, [sched, now, state.soundOn]);
+
+  // Grill sear: chime at each of the six turns.  The end of the sear is the
+  // insistent "Check the crust" step above.
+  const lastFace = useRef(null);
+  useEffect(() => {
+    const grillSearing = sched && sched.searMethod === 'grill' && state.searStart != null && state.done.crust == null;
+    if (!grillSearing) { lastFace.current = null; return; }
+    const face = searFace(state.searStart, now);
+    if (face.ended) return;
+    const key = `${state.searStart}:${face.index}`;
+    if (lastFace.current !== key) {
+      const first = lastFace.current == null && now - state.searStart > 5000; // reload mid-face: no repeat
+      lastFace.current = key;
+      if (!first) {
+        if (state.soundOn) playChime('normal');
+        setFlash(true);
+        setTimeout(() => setFlash(false), 1600);
+      }
+    }
+  }, [sched, now, state.searStart, state.done.crust, state.soundOn]);
 
   const update = (fn) => setState((s) => fn(s));
   const actions = {
@@ -146,6 +167,7 @@ export default function App() {
         {tab === 'timeline' && <TimelineTab state={state} sched={sched} now={now} actions={actions} />}
         {tab === 'ingredients' && (
           <IngredientsTab
+            searMethod={state.searMethod}
             checklist={state.checklist}
             toggle={(id) => update((s) => ({ ...s, checklist: { ...s.checklist, [id]: !s.checklist[id] } }))}
             clearAll={() => update((s) => ({ ...s, checklist: {} }))}

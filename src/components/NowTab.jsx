@@ -1,5 +1,7 @@
 import { clockTime, clockTimeSeconds, relative, mmss } from '../lib/format.js';
 import StepCard from './StepCard.jsx';
+import { searFace } from '../lib/sear.js';
+import { GRILL_FACES } from '../data/steps.js';
 
 const AFTER_PULL = new Set(['tent', 'drippings', 'gravy-prep', 'skillet', 'roux', 'wine', 'stock', 'simmer', 'hold', 'uncover', 'sear']);
 
@@ -49,7 +51,33 @@ export default function NowTab({ state, sched, now, actions, pulseIds, tempLog }
         </div>
       ))}
 
-      {searing && (
+      {searing && sched.searMethod === 'grill' && (() => {
+        const face = searFace(state.searStart, now);
+        return (
+          <div className={`sear-timer grill ${face.ended ? 'over' : ''}`}>
+            <span className="label">Searing on the grill</span>
+            {!face.ended ? (
+              <>
+                <span className="face">Face {face.index + 1} of {GRILL_FACES.length}: {face.name} down</span>
+                <span className="countdown">{mmss(face.nextTurnIn)}</span>
+                <span className="sub">
+                  {face.index < GRILL_FACES.length - 1
+                    ? `Then turn so the ${GRILL_FACES[face.index + 1]} is down.  `
+                    : 'Then check the crust.  '}
+                  Close the lid between turns.  Sear ends in {mmss(searLeft)}.
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="countdown">{mmss(searLeft)} over</span>
+                <span className="sub">Check the crust.  Sear any pale side a little longer, then bring everything inside.</span>
+              </>
+            )}
+          </div>
+        );
+      })()}
+
+      {searing && sched.searMethod !== 'grill' && (
         <div className={`sear-timer ${searLeft <= 0 ? 'over' : ''}`}>
           <span className="label">Sear</span>
           <span className="countdown">{searLeft > 0 ? mmss(searLeft) : `${mmss(searLeft)} over`}</span>
@@ -76,7 +104,7 @@ export default function NowTab({ state, sched, now, actions, pulseIds, tempLog }
           <h2>{sched.phase}</h2>
           {sched.latestTemp && <p>Latest reading {sched.latestTemp.f} F at {clockTime(sched.latestTemp.at)}.</p>}
           {state.pulled != null && state.searStart == null && <p>Resting since {clockTime(state.pulled)}.</p>}
-          <p className="muted">Nothing to do right now.</p>
+          <p className="muted">{searing ? 'Follow the sear timer above.' : 'Nothing to do right now.'}</p>
         </div>
       )}
 

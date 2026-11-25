@@ -135,7 +135,11 @@ export function computeSchedule(state, now) {
   }
 
   let phase = 'Before the roast goes in';
-  if (searStart != null) phase = done.serve != null ? 'Served' : 'Searing and serving';
+  if (searStart != null) {
+    if (done.serve != null) phase = 'Served';
+    else if (done.crust == null) phase = SEAR_METHODS[method].phase;
+    else phase = 'Carving and serving';
+  }
   else if (pulled != null) phase = 'Resting';
   else if (ovenIn != null) phase = 'Roasting';
 

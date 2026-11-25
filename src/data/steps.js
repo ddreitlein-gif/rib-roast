@@ -68,6 +68,13 @@ export const STEPS = [
     id: 'skillet', track: 'roast', anchor: 'S', offset: -40,
     title: 'Skillet in, oven to 500 F',
     detail: 'Put the empty cast iron skillet in the oven, then turn the oven up to 500 F.  Turn on the fan over the stove.  The skillet heats with the oven for about 40 minutes and will become extremely hot.',
+    variants: { grill: null },
+  },
+  {
+    id: 'grill-preheat', track: 'roast', anchor: 'S', offset: -35,
+    title: 'Heat the skillet on the grill',
+    detail: 'Set the empty cast iron skillet directly on the grill grates.  Turn the grill to high and close the lid.  Let it heat at least 20 minutes, longer if it is cold or windy outside.  Turn the oven off; it is now free for side dishes.',
+    variants: { oven: null },
   },
   {
     id: 'roux', track: 'gravy', anchor: 'S', offset: -30,
@@ -98,28 +105,52 @@ export const STEPS = [
     id: 'uncover', track: 'roast', anchor: 'S', offset: -5,
     title: 'Uncover the roast and get ready to sear',
     detail: 'Take the foil off the roast.  Pull out the leave-in probe unless its cable is rated for 500 F.  Set out the grapeseed oil, a folded paper towel, tongs, and oven mitts next to the oven.',
+    variants: {
+      grill: {
+        title: 'Uncover the roast and carry everything to the grill',
+        detail: 'Take the foil off the roast and pull out the probe.  Carry the roast, the grapeseed oil, a folded paper towel, long tongs, heavy mitts or grill gloves, and a clean board or sheet pan out to the grill.',
+      },
+    },
   },
   {
     id: 'sear', track: 'roast', anchor: 'S', offset: 0, sets: 'searStart',
     title: 'Sear: roast into the hot skillet',
     detail: 'Searing browns the outside to build a crust.  With oven mitts, pull the oven rack partway out.  Pour 1 to 2 teaspoons of grapeseed oil onto the folded paper towel and, holding it with tongs, wipe it across the bottom of the skillet.  It will smoke; that is expected.  Set the roast in the skillet with the fat layer up, slide the rack back in, and close the oven.  Tap the button right away to start an 8 minute timer.  The skillet and its handle are extremely hot from here on.',
     doneLabel: 'Roast Is In Skillet',
+    variants: {
+      grill: {
+        title: 'Sear: roast into the skillet on the grill',
+        detail: 'Searing browns the outside to build a crust.  With heavy mitts on, open the lid.  Pour 1 to 2 teaspoons of grapeseed oil onto the folded paper towel and, holding it with long tongs, wipe it across the hot skillet.  It will smoke; that is expected.  Set the roast in with the thick fat layer facing down, and close the lid.  Tap the button right away.  It starts the 8 minute timer, which tells you when to turn the roast onto each of its six sides.  The skillet and its handle are extremely hot from here on.',
+      },
+    },
   },
   {
     id: 'turn', track: 'roast', anchor: 'S', offset: 4,
     title: 'Turn the roast once',
     detail: 'With oven mitts and tongs, open the oven and roll the roast over so a different side touches the skillet.  Close the oven.',
+    variants: { grill: null },
   },
   {
     id: 'crust', track: 'roast', anchor: 'S', offset: 8,
     title: 'Check the crust and take the roast out',
     detail: 'Look at the outside.  When it is deep brown all over (usually 6 to 10 minutes total), take the skillet out with oven mitts and move the roast to the carving board right away.  Lay a dish towel over the skillet handle as a reminder that it is extremely hot.  Turn the oven off.',
     insistent: true,
+    variants: {
+      grill: {
+        title: 'Check the crust and bring everything inside',
+        detail: 'Look at the outside.  If any side is still pale, turn that side down for another minute.  When it is deep brown all over, use the tongs to move the roast to the clean board.  With heavy mitts, carry the skillet inside and set it on the stovetop.  Turn the grill off.',
+      },
+    },
   },
   {
     id: 'deglaze', track: 'gravy', anchor: 'S', offset: 9,
     title: 'Save the browned bits from the skillet',
     detail: 'Set the hot skillet on a stovetop burner.  The burner can stay off, because the skillet is still very hot.  Pour in a splash, about 1/4 cup, of the saved stock.  It will sizzle.  Scrape the bottom with a wooden spoon to loosen the browned bits, which carry a lot of flavor.  (Cooks call this "deglazing.")  Pour the liquid and bits into the gravy and stir.  Use an oven mitt on the skillet handle.',
+    variants: {
+      grill: {
+        detail: 'The skillet has just come in from the grill, and its handle is very hot, so keep a mitt on it.  Set it on a stovetop burner; the burner can stay off.  Pour in a splash, about 1/4 cup, of the saved stock.  It will sizzle.  Scrape the bottom with a wooden spoon to loosen the browned bits, which carry a lot of flavor.  (Cooks call this "deglazing.")  Pour the liquid and bits into the gravy and stir.',
+      },
+    },
   },
   {
     id: 'season-gravy', track: 'gravy', anchor: 'S', offset: 11,
@@ -163,8 +194,12 @@ export const TEMP_STEPS = {
 // How the roast is seared.  lead: minimum minutes from pull to sear start
 // (heating the oven or grill).  searMin: length of the sear timer.
 export const SEAR_METHODS = {
-  oven: { label: 'Oven', lead: 40, searMin: 8 },
-  grill: { label: 'Grill', lead: 40, searMin: 8 },
+  oven: { label: 'Oven', lead: 40, searMin: 8, phase: 'Searing in the oven' },
+  grill: { label: 'Grill', lead: 40, searMin: 8, phase: 'Searing on the grill' },
 };
+
+// On the grill the heat comes only from below, so the roast is turned onto
+// each of six faces, 80 seconds apiece, during the 8 minute sear.
+export const GRILL_FACES = ['fat cap', 'first side', 'bone side', 'second side', 'first cut end', 'second cut end'];
 
 export const ANCHOR_SETTERS = { 'oven-in': 'ovenIn', pull: 'pulled', sear: 'searStart' };
