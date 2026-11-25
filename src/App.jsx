@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { computeSchedule } from './lib/schedule.js';
 import { emptyState, markDone, undo, skip, startNow, skipTempering, logTemp, removeTemp } from './lib/state.js';
 import { loadState, saveState, storageAvailable } from './lib/storage.js';
-import { now as clockNow } from './lib/clock.js';
+import { now as clockNow, rehearsal, speed, jumpTo, resetRehearsalClock } from './lib/clock.js';
+import { defaultMealTime, clockTime } from './lib/format.js';
 import { unlockAudio, audioReady, playChime } from './lib/chime.js';
 import { requestWakeLock, isAwake, isSupported as wakeSupported, onWakeChange } from './lib/wakeLock.js';
 import { checkAlerts } from './lib/alerts.js';
@@ -117,6 +118,20 @@ export default function App() {
     <div className="app">
       {!storageAvailable() && (
         <div className="notice">Storage is unavailable in this browser, so progress will be lost if the page reloads.</div>
+      )}
+      {rehearsal && (
+        <div className="rehearsal">
+          <strong>Rehearsal at {speed}x</strong>
+          <span>Virtual time {clockTime(now)}.  Real progress is not affected.</span>
+          <span className="row">
+            <button className="btn" onClick={() => { jumpTo((state.mealTime ?? defaultMealTime(clockNow())) - 301 * 60000); setNow(clockNow()); chimed.current = {}; }}>
+              Jump to 1 Minute Before Start
+            </button>
+            <button className="btn" onClick={() => { resetRehearsalClock(); setState(emptyState()); setNow(clockNow()); chimed.current = {}; setTab('home'); }}>
+              Restart Rehearsal
+            </button>
+          </span>
+        </div>
       )}
       {state.mealTime != null && (!unlocked || (wakeSupported() && !awake)) && (
         <button className="notice tap" onClick={unlock}>

@@ -106,7 +106,13 @@ export function computeSchedule(state, now) {
       }
       const reachedReady = readings.find((r) => r.f >= READY_F);
       const readyAt = reachedReady ? reachedReady.at : (ovenIn != null ? Math.max(projectTime(ovenIn, temps, READY_F).at, now) : P - 10 * MIN);
-      push(TEMP_STEPS.ready, readyAt, !!reachedReady, { generated: true, estimate: !reachedReady });
+      push(TEMP_STEPS.ready, readyAt, !!reachedReady, { generated: true, estimate: !reachedReady && pulled == null });
+      // Once the roast is out, getting ready is moot.
+      const readyStep = steps[steps.length - 1];
+      if (pulled != null && readyStep.status !== 'done' && readyStep.status !== 'skipped') {
+        readyStep.status = 'done';
+        readyStep.autoDone = true;
+      }
       const reachedPull = readings.find((r) => r.f >= PULL_F);
       const pullDue = pulled != null ? pulled : reachedPull ? reachedPull.at : P;
       push(TEMP_STEPS.pull, pullDue, !!reachedPull, { generated: true, estimate: !reachedPull && pulled == null });

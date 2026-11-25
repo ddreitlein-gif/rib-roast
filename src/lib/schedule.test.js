@@ -86,6 +86,10 @@ describe('anchors and gating', () => {
     expect(clock(step(s, 'serve').dueAt)).toBe('16:03');
     expect(clock(s.projectedMeal)).toBe('16:03');
   });
+  it('completes the get-ready step once the roast is out', () => {
+    const s = computeSchedule(roast(at(14, 45)), at(14, 50));
+    expect(step(s, 'get-ready').status).toBe('done');
+  });
   it('never brings the skillet step due while the roast is in the oven', () => {
     const st = markDone(base(), 'oven-in', at(11, 45));
     const s = computeSchedule(st, at(15, 30));
