@@ -1,5 +1,5 @@
-// The step table from the build plan.  Each step is timed as an offset (in
-// minutes) from one anchor:
+// The step table from the build plan, written for a novice cook.  Each step
+// is timed as an offset (in minutes) from one anchor:
 //   M  meal time entered on the Home tab
 //   O  roast goes into the oven
 //   P  roast comes out at 115 F
@@ -12,129 +12,129 @@ export const STEPS = [
   {
     id: 'temper', track: 'roast', anchor: 'M', offset: -300,
     title: 'Take the roast out of the refrigerator',
-    detail: 'Leave it on its rack.',
+    detail: 'Set it on the counter, still on its wire rack over the pan and uncovered.  Letting it warm up a little helps it cook evenly.',
   },
   {
     id: 'season', track: 'roast', anchor: 'M', offset: -295,
     title: 'Season the roast',
-    detail: 'Rub with the olive oil or butter, pepper, garlic, and herbs.  Set fat side up on the rack over the pan.',
+    detail: 'Pat the outside dry with paper towels.  Rub 1 tablespoon of olive oil or soft butter all over the outside, then press on the pepper, garlic, and herbs.  Do not add more salt; it was salted yesterday.  Set it back on the rack with the thick white fat layer facing up.',
   },
   {
     id: 'oven-on', track: 'roast', anchor: 'M', offset: -275,
     title: 'Turn the oven on to 225 F',
-    detail: 'Rack in the lower-middle position.',
+    detail: 'First move an oven rack to one slot below the middle.  Then turn the oven on to 225 F.  It takes about 20 minutes to heat.',
   },
   {
     id: 'oven-in', track: 'roast', anchor: 'M', offset: -255, sets: 'ovenIn',
     title: 'Probe in, roast in the oven',
-    detail: 'Insert the leave-in probe into the center, away from bone and fat.  Put the roast in the oven.  Set the probe alarm to 110 F.',
+    detail: 'Push the tip of the leave-in probe into the side of the roast so the tip sits in the very center of the thickest part.  Keep the tip away from the bone and the white fat, which give false readings.  Put the roast, on its rack and pan, in the oven and close the door over the probe cable.  Set the probe alarm to 110 F.  Then tap Roast Is In.',
     doneLabel: 'Roast Is In',
   },
   {
     id: 'glance-30', track: 'roast', anchor: 'O', offset: 30,
     title: 'Glance at the probe',
-    detail: 'Logging the reading is optional.',
+    detail: 'Look at the probe display.  There is no need to open the oven.  Entering the number is optional.',
     temp: 'optional',
   },
   {
     id: 'glance-60', track: 'roast', anchor: 'O', offset: 60,
     title: 'Glance at the probe',
-    detail: 'Logging the reading is optional.',
+    detail: 'Look at the probe display.  There is no need to open the oven.  Entering the number is optional.',
     temp: 'optional',
   },
   {
     id: 'check-90', track: 'roast', anchor: 'O', offset: 90,
-    title: 'First formal temperature check',
-    detail: 'Log the probe reading.  The app begins projecting the pull time.',
+    title: 'First temperature check',
+    detail: 'Read the probe display and enter the number.  From here on, the app uses your readings to estimate when the roast will be ready.',
     temp: 'required',
   },
   // Generated here: repeat checks, get ready (110 F), and pull (115 F).
   {
     id: 'tent', track: 'roast', anchor: 'P', offset: 0,
-    title: 'Tent the roast with foil',
-    detail: 'Loosely.  Do not wrap it tightly.',
+    title: 'Cover the roast loosely with foil',
+    detail: 'Lay a sheet of foil over the top like a tent, so heat stays in but steam can escape.  Do not wrap it tightly, or the outside turns soggy.  Leave the probe in.  The roast now rests, and its center will rise a few more degrees on its own.',
   },
   {
     id: 'drippings', track: 'gravy', anchor: 'P', offset: 2,
-    title: 'Pour off the drippings',
-    detail: 'Pour the drippings from the roasting pan into the saucepan.',
+    title: 'Pour the pan juices into the saucepan',
+    detail: 'Using oven mitts, lift the rack with the roast off the pan and set it on a cutting board.  Tilt the pan and pour the drippings (the melted fat and juices in the bottom) into the saucepan.  Scrape in any browned bits with a spatula.  Put the roast back on the rack and re-cover it loosely with the foil.',
   },
   {
     id: 'gravy-prep', track: 'gravy', anchor: 'P', offset: 5,
-    title: 'Set up the gravy',
-    detail: 'Measure 2 tablespoons flour and 1/4 cup wine.  Set out the butter.  Begin warming 2 cups stock.',
+    title: 'Get the gravy ingredients ready',
+    detail: 'Measure 2 tablespoons of flour into a small bowl and 1/4 cup of red wine into a cup.  Set out the butter and a whisk.  Warm 2 1/2 cups of beef stock in a small pot on low heat, or for 2 minutes in the microwave.  Warm stock mixes in more smoothly than cold.  You will use 2 cups in the gravy and save the rest for thinning it later.',
   },
   {
     id: 'skillet', track: 'roast', anchor: 'S', offset: -40,
     title: 'Skillet in, oven to 500 F',
-    detail: 'Put the cast iron skillet in the oven and raise the oven to 500 F.  Turn on the vent fan.',
+    detail: 'Put the empty cast iron skillet in the oven, then turn the oven up to 500 F.  Turn on the fan over the stove.  The skillet heats with the oven for about 40 minutes and will become extremely hot.',
   },
   {
     id: 'roux', track: 'gravy', anchor: 'S', offset: -30,
-    title: 'Make the roux',
-    detail: 'Heat the drippings over medium heat.  Add butter to reach about 2 tablespoons of fat.  Whisk in the flour and cook 2 minutes, to light brown.',
+    title: 'Start the gravy: cook the flour in fat',
+    detail: 'Set the saucepan of drippings on the stove over medium heat.  You want about 2 tablespoons of fat, which is the clear golden layer on top.  If there is less, add butter to make up the difference.  When it bubbles, sprinkle in the 2 tablespoons of flour and whisk constantly for about 2 minutes, until the paste turns light tan and smells nutty.  This flour paste is what thickens the gravy.',
   },
   {
     id: 'wine', track: 'gravy', anchor: 'S', offset: -27,
     title: 'Add the wine (optional)',
-    detail: 'Whisk in the wine and simmer 1 minute.',
+    detail: 'Pour in the 1/4 cup of wine while whisking.  It will bubble and steam.  Let it bubble for 1 minute.  Skip this step if you are not using wine.',
   },
   {
     id: 'stock', track: 'gravy', anchor: 'S', offset: -26,
-    title: 'Add the stock',
-    detail: 'Add the warm stock gradually, whisking constantly.',
+    title: 'Whisk in the stock',
+    detail: 'Pour in 2 cups of the warm stock slowly, about 1/2 cup at a time, whisking the whole time so no lumps form.  Save the remaining 1/2 cup.  If a few lumps form, keep whisking hard and most will disappear.',
   },
   {
     id: 'simmer', track: 'gravy', anchor: 'S', offset: -23,
-    title: 'Simmer the gravy',
-    detail: 'Simmer 5 to 8 minutes, until the gravy coats a spoon.',
+    title: 'Let the gravy thicken',
+    detail: 'Adjust the heat so the gravy bubbles gently, with small lazy bubbles rather than a hard boil.  Stir now and then.  It is ready when it coats a spoon: dip a spoon in, run a finger across the back, and the line should stay clear.  This usually takes 5 to 8 minutes, but at 6,300 feet it will likely thicken sooner, so check at 3 to 4 minutes.  If it gets too thick, whisk in a splash of the saved stock.',
   },
   {
     id: 'hold', track: 'gravy', anchor: 'S', offset: -15,
-    title: 'Gravy to low and hold',
-    detail: 'Do not salt it yet.',
+    title: 'Keep the gravy warm on low',
+    detail: 'Turn the burner to its lowest setting and stir every few minutes.  Do not add salt yet, because the skillet juices added later are salty.  At altitude it keeps thickening on low, so whisk in a splash of the saved stock if it gets too thick.',
   },
   {
     id: 'uncover', track: 'roast', anchor: 'S', offset: -5,
-    title: 'Uncover the roast',
-    detail: 'Remove the probe unless it is rated for 500 F.  Set out the grapeseed oil and oven mitts.',
+    title: 'Uncover the roast and get ready to sear',
+    detail: 'Take the foil off the roast.  Pull out the leave-in probe unless its cable is rated for 500 F.  Set out the grapeseed oil, a folded paper towel, tongs, and oven mitts next to the oven.',
   },
   {
     id: 'sear', track: 'roast', anchor: 'S', offset: 0, sets: 'searStart',
-    title: 'Sear: roast into the skillet',
-    detail: 'Wipe 1 to 2 teaspoons grapeseed oil across the hot skillet.  Set the roast in fat side up and return it to the oven.  Done starts an 8 minute timer.',
+    title: 'Sear: roast into the hot skillet',
+    detail: 'Searing browns the outside to build a crust.  With oven mitts, pull the oven rack partway out.  Pour 1 to 2 teaspoons of grapeseed oil onto the folded paper towel and, holding it with tongs, wipe it across the bottom of the skillet.  It will smoke; that is expected.  Set the roast in the skillet with the fat layer up, slide the rack back in, and close the oven.  Tap the button right away to start an 8 minute timer.  The skillet and its handle are extremely hot from here on.',
     doneLabel: 'Roast Is In Skillet',
   },
   {
     id: 'turn', track: 'roast', anchor: 'S', offset: 4,
     title: 'Turn the roast once',
-    detail: '',
+    detail: 'With oven mitts and tongs, open the oven and roll the roast over so a different side touches the skillet.  Close the oven.',
   },
   {
     id: 'crust', track: 'roast', anchor: 'S', offset: 8,
-    title: 'Check the crust',
-    detail: 'Remove when deeply browned (6 to 10 minutes total).  Move the roast to the board promptly.  Drape a towel over the skillet handle.',
+    title: 'Check the crust and take the roast out',
+    detail: 'Look at the outside.  When it is deep brown all over (usually 6 to 10 minutes total), take the skillet out with oven mitts and move the roast to the carving board right away.  Lay a dish towel over the skillet handle as a reminder that it is extremely hot.  Turn the oven off.',
     insistent: true,
   },
   {
     id: 'deglaze', track: 'gravy', anchor: 'S', offset: 9,
-    title: 'Deglaze the skillet',
-    detail: 'On the stovetop with a splash of stock.  Scrape up the browned bits and pour them into the gravy.',
+    title: 'Save the browned bits from the skillet',
+    detail: 'Set the hot skillet on a stovetop burner.  The burner can stay off, because the skillet is still very hot.  Pour in a splash, about 1/4 cup, of the saved stock.  It will sizzle.  Scrape the bottom with a wooden spoon to loosen the browned bits, which carry a lot of flavor.  (Cooks call this "deglazing.")  Pour the liquid and bits into the gravy and stir.  Use an oven mitt on the skillet handle.',
   },
   {
     id: 'season-gravy', track: 'gravy', anchor: 'S', offset: 11,
     title: 'Season the gravy',
-    detail: 'Worcestershire and pepper, then taste before adding any salt.',
+    detail: 'Stir in a dash (a few drops) of Worcestershire sauce and a little black pepper.  Taste with a clean spoon.  Add salt only if it needs it, a small pinch at a time, tasting after each.',
   },
   {
     id: 'carve', track: 'roast', anchor: 'S', offset: 12,
     title: 'Carve',
-    detail: 'For a bone-in roast, cut the bones away first, then slice across the grain.',
+    detail: 'For a bone-in roast, first cut the meat away from the bones by running the knife along their curve, and set the bones aside.  Look for the lines of muscle fibers running in one direction; this is the grain.  Slice across those lines, not along them, into slices about 1/2 inch thick.  Cutting across the grain makes each bite tender.',
   },
   {
     id: 'serve', track: 'both', anchor: 'S', offset: 20,
     title: 'Serve',
-    detail: '',
+    detail: 'Pour the gravy into a gravy boat or bowl and bring everything to the table.',
   },
 ];
 
@@ -143,18 +143,18 @@ export const TEMP_STEPS = {
   check: {
     id: 'temp-check', track: 'roast',
     title: 'Check the probe temperature',
-    detail: 'Log the reading.  Checks come every 20 minutes below 100 F, every 10 minutes from 100 F, and every 5 minutes from 110 F.',
+    detail: 'Read the probe display and enter the number.  There is no need to open the oven.  Checks come every 20 minutes below 100 F, every 10 minutes from 100 F, and every 5 minutes from 110 F.',
     temp: 'required',
   },
   ready: {
     id: 'get-ready', track: 'roast',
-    title: 'Get ready to pull',
-    detail: 'Set out the instant-read thermometer, foil, and saucepan.',
+    title: 'Get ready to take the roast out',
+    detail: 'The roast is close.  Set out the instant-read thermometer, a sheet of foil big enough to cover the roast loosely, oven mitts, and the saucepan for the gravy.',
   },
   pull: {
     id: 'pull', track: 'roast', sets: 'pulled',
-    title: 'Confirm 115 F and take the roast out',
-    detail: 'At 115 F on the probe, confirm with the instant-read in the center.  If confirmed, take the roast out.',
+    title: 'Check 115 F and take the roast out',
+    detail: 'The probe reads 115 F.  Open the oven and push the instant-read thermometer into the center of the roast from a different spot.  If it also reads about 115 F, use oven mitts to take the roast out, pan and all, and set it on the stovetop.  If it reads lower, close the oven and check again in 5 minutes.  The oven can stay on at 225 F.',
     doneLabel: 'Roast Is Out',
     insistent: true,
   },

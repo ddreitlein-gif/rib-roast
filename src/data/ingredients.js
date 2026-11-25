@@ -14,10 +14,10 @@ export const INGREDIENT_GROUPS = [
   {
     group: 'Gravy',
     items: [
-      { id: 'drippings', name: 'Pan drippings', amount: 'From the roast' },
+      { id: 'drippings', name: 'Pan drippings (the fat and juices left in the roasting pan)', amount: 'From the roast' },
       { id: 'gravy-butter', name: 'Butter', amount: 'Up to 2 tablespoons' },
       { id: 'flour', name: 'All-purpose flour', amount: '2 tablespoons' },
-      { id: 'stock', name: 'Low-sodium beef stock', amount: '2 cups, plus a splash' },
+      { id: 'stock', name: 'Low-sodium beef stock', amount: '2 1/2 cups (extra for thinning at altitude and deglazing)' },
       { id: 'wine', name: 'Dry red wine (optional)', amount: '1/4 cup' },
       { id: 'worcestershire', name: 'Worcestershire sauce', amount: 'A dash' },
       { id: 'salt-pepper', name: 'Salt and black pepper', amount: 'To taste' },

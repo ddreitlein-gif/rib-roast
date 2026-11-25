@@ -1,26 +1,22 @@
-// Decides when to chime: once when a step comes due, then again at 2 and 5
-// minutes if it has not been acknowledged.  Pure apart from the passed-in map.
-export const REPEAT_MIN = [0, 2, 5];
+// Decides when to chime.  A step chimes as soon as it comes due, and the chime
+// then repeats every REPEAT_SEC seconds (real time, even in rehearsal) until
+// every due step is done or skipped.  Pure apart from the passed-in memo.
+export const REPEAT_SEC = 15;
 
-export function stagesReached(step, now) {
-  const elapsedMin = (now - step.dueAt) / 60000;
-  return REPEAT_MIN.filter((m) => elapsedMin >= m).length;
-}
-
-// Returns { chime: null | 'normal' | 'insistent', next } where next is the
-// updated map of stepId -> stages already chimed.
-export function checkAlerts(steps, now, chimed) {
-  const next = {};
-  let chime = null;
-  for (const s of steps) {
-    if (s.status !== 'due' && s.status !== 'overdue') continue;
-    const reached = stagesReached(s, now);
-    const before = chimed[s.id] ?? 0;
-    next[s.id] = Math.max(before, reached);
-    if (reached > before) {
-      const kind = s.insistent ? 'insistent' : 'normal';
-      if (chime !== 'insistent') chime = kind;
-    }
+// steps: from computeSchedule.  realNow: Date.now().  memo: { seen: {id: true}, lastAt }.
+// Returns { chime: null | 'normal' | 'insistent', memo }.
+export function checkAlerts(steps, realNow, memo = { seen: {}, lastAt: 0 }) {
+  const active = steps.filter((s) => s.status === 'due' || s.status === 'overdue');
+  if (!active.length) return { chime: null, memo: { seen: {}, lastAt: 0 } };
+  const seen = {};
+  let fresh = false;
+  for (const s of active) {
+    seen[s.id] = true;
+    if (!memo.seen[s.id]) fresh = true;
   }
-  return { chime, next };
+  const kind = active.some((s) => s.insistent) ? 'insistent' : 'normal';
+  if (fresh || realNow - memo.lastAt >= REPEAT_SEC * 1000) {
+    return { chime: kind, memo: { seen, lastAt: realNow } };
+  }
+  return { chime: null, memo: { seen, lastAt: memo.lastAt } };
 }

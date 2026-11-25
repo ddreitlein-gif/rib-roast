@@ -51,12 +51,12 @@ export default function App() {
     return () => document.removeEventListener('pointerdown', onTap);
   }, [unlocked]);
 
-  // Chime when a step comes due, and again at 2 and 5 minutes if not done.
-  const chimed = useRef({});
+  // Chime when a step comes due, and keep chiming until it is done or skipped.
+  const chimed = useRef(undefined);
   useEffect(() => {
-    if (!sched) { chimed.current = {}; return; }
-    const { chime, next } = checkAlerts(sched.steps, now, chimed.current);
-    chimed.current = next;
+    if (!sched) { chimed.current = undefined; return; }
+    const { chime, memo } = checkAlerts(sched.steps, Date.now(), chimed.current);
+    chimed.current = memo;
     if (chime) {
       if (state.soundOn) playChime(chime);
       setFlash(true);
@@ -124,10 +124,10 @@ export default function App() {
           <strong>Rehearsal at {speed}x</strong>
           <span>Virtual time {clockTime(now)}.  Real progress is not affected.</span>
           <span className="row">
-            <button className="btn" onClick={() => { jumpTo((state.mealTime ?? defaultMealTime(clockNow())) - 301 * 60000); setNow(clockNow()); chimed.current = {}; }}>
+            <button className="btn" onClick={() => { jumpTo((state.mealTime ?? defaultMealTime(clockNow())) - 301 * 60000); setNow(clockNow()); chimed.current = undefined; }}>
               Jump to 1 Minute Before Start
             </button>
-            <button className="btn" onClick={() => { resetRehearsalClock(); setState(emptyState()); setNow(clockNow()); chimed.current = {}; setTab('home'); }}>
+            <button className="btn" onClick={() => { resetRehearsalClock(); setState(emptyState()); setNow(clockNow()); chimed.current = undefined; setTab('home'); }}>
               Restart Rehearsal
             </button>
           </span>
