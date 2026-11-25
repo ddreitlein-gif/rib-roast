@@ -182,3 +182,22 @@ button { font: inherit; color: inherit; }
 .ing-group input { width: 26px; height: 26px; accent-color: var(--burgundy); margin: 0; }
 .ing-group .amount { grid-column: 2; color: var(--muted); font-size: 15px; }
 .ing-group .checked .name { color: var(--muted); text-decoration: line-through; }
+
+/* Temperature log */
+.templog { margin-top: 22px; }
+.templog-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.readings { list-style: none; margin: 10px 0 0; padding: 0; }
+.readings li { display: grid; grid-template-columns: 90px 1fr auto; gap: 10px; padding: 8px 0; border-top: 1px solid var(--parchment); align-items: center; }
+.readings .f { font-weight: 700; font-variant-numeric: tabular-nums; }
+.link { background: none; border: 0; color: var(--danger); cursor: pointer; font-size: 15px; padding: 8px; }
+.overlay {
+  position: fixed; inset: 0; z-index: 30; background: rgba(40, 20, 20, 0.45);
+  display: flex; align-items: center; justify-content: center; padding: 16px;
+}
+.pad-card { background: var(--card); border-radius: 20px; padding: 22px; width: 100%; max-width: 420px; text-align: center; }
+.pad-display { font-family: var(--serif); font-size: 64px; font-variant-numeric: tabular-nums; margin: 4px 0 12px; }
+.pad-display span { font-size: 28px; color: var(--muted); }
+.pad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pad-key { min-height: 72px; font-size: 30px; }
+.pad-key.fn { font-size: 18px; color: var(--muted); }
+.btn:disabled { opacity: 0.45; cursor: default; }

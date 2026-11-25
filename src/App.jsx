@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { computeSchedule } from './lib/schedule.js';
-import { emptyState, markDone, undo, skip, startNow, skipTempering } from './lib/state.js';
+import { emptyState, markDone, undo, skip, startNow, skipTempering, logTemp, removeTemp } from './lib/state.js';
 import { loadState, saveState, storageAvailable } from './lib/storage.js';
 import { now as clockNow } from './lib/clock.js';
 import TabBar from './components/TabBar.jsx';
@@ -8,11 +8,13 @@ import HomeTab from './components/HomeTab.jsx';
 import NowTab from './components/NowTab.jsx';
 import TimelineTab from './components/TimelineTab.jsx';
 import IngredientsTab from './components/IngredientsTab.jsx';
+import TempLog, { TempPad } from './components/TempLog.jsx';
 
 export default function App() {
   const [state, setState] = useState(() => loadState());
   const [tab, setTab] = useState(() => (loadState().mealTime != null ? 'now' : 'home'));
   const [now, setNow] = useState(() => clockNow());
+  const [tempFor, setTempFor] = useState(null); // step id the pad was opened from, or 'log'
 
   // Recompute from the system clock each second; never count ticks.
   useEffect(() => {
@@ -40,8 +42,28 @@ export default function App() {
     done: (id) => update((s) => markDone(s, id, clockNow())),
     undo: (id) => update((s) => undo(s, id)),
     skip: (id) => update((s) => skip(s, id)),
-    openTempLog: () => {},
+    openTempLog: (id) => setTempFor(id || 'log'),
   };
+
+  const saveTemp = (f) => {
+    const at = clockNow();
+    update((s) => {
+      let next = logTemp(s, f, at);
+      // Logging from a glance step completes it.
+      if (tempFor === 'glance-30' || tempFor === 'glance-60' || tempFor === 'check-90') next = markDone(next, tempFor, at);
+      return next;
+    });
+    setTempFor(null);
+  };
+
+  const tempLog = sched && (
+    <TempLog
+      state={state}
+      sched={sched}
+      onOpen={() => setTempFor('log')}
+      onRemove={(at) => update((s) => removeTemp(s, at))}
+    />
+  );
 
   const dueCount = sched ? sched.steps.filter((s) => s.status === 'due' || s.status === 'overdue').length : 0;
 
@@ -52,7 +74,7 @@ export default function App() {
       )}
       <main className="content">
         {tab === 'home' && <HomeTab state={state} sched={sched} now={now} actions={actions} />}
-        {tab === 'now' && <NowTab state={state} sched={sched} now={now} actions={actions} pulseIds={[]} />}
+        {tab === 'now' && <NowTab state={state} sched={sched} now={now} actions={actions} pulseIds={[]} tempLog={tempLog} />}
         {tab === 'timeline' && <TimelineTab state={state} sched={sched} now={now} actions={actions} />}
         {tab === 'ingredients' && (
           <IngredientsTab
@@ -62,6 +84,7 @@ export default function App() {
           />
         )}
       </main>
+      {tempFor && <TempPad onSave={saveTemp} onClose={() => setTempFor(null)} />}
       <TabBar tab={tab} setTab={setTab} badge={dueCount} />
     </div>
   );
