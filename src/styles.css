@@ -1,2 +1,142 @@
-body { margin: 0; background: #f4ead7; color: #3a1d1d; font-family: Georgia, 'Iowan Old Style', serif; }
-.placeholder { padding: 48px 16px; text-align: center; }
+:root {
+  --parchment: #f4ead7;
+  --parchment-deep: #eadbbd;
+  --card: #fffaf0;
+  --ink: #3a1d1d;
+  --muted: #7a6152;
+  --burgundy: #7a1f2b;
+  --burgundy-deep: #561520;
+  --gold: #b8892f;
+  --gold-soft: #e8cf8f;
+  --sage: #7d8f69;
+  --sage-soft: #dfe5d2;
+  --amber: #c8781a;
+  --amber-soft: #fbe3bf;
+  --danger: #9b2c2c;
+  --serif: 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+  --sans: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  --tabbar-h: 72px;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--parchment); color: var(--ink); }
+body { font-family: var(--sans); font-size: 18px; line-height: 1.4; -webkit-text-size-adjust: 100%; }
+h1, h2, h3 { font-family: var(--serif); font-weight: 600; margin: 0 0 8px; }
+button { font: inherit; color: inherit; }
+
+.app { min-height: 100vh; min-height: 100dvh; }
+.content {
+  max-width: 1100px; margin: 0 auto;
+  padding: 16px 16px calc(var(--tabbar-h) + 24px + env(safe-area-inset-bottom));
+}
+.pad { padding: 24px 0; }
+.muted { color: var(--muted); }
+.notice { background: var(--amber-soft); color: var(--ink); padding: 10px 16px; text-align: center; font-size: 15px; }
+
+/* Tab bar */
+.tabbar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  background: var(--card); border-top: 1px solid var(--parchment-deep);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.tab {
+  height: var(--tabbar-h); border: 0; background: none; font-size: 18px; font-weight: 600;
+  color: var(--muted); position: relative; cursor: pointer;
+}
+.tab.active { color: var(--burgundy); box-shadow: inset 0 3px 0 var(--burgundy); }
+.badge {
+  display: inline-block; min-width: 24px; height: 24px; line-height: 24px; margin-left: 6px;
+  border-radius: 12px; background: var(--burgundy); color: #fff; font-size: 14px; padding: 0 6px;
+}
+
+/* Buttons */
+.btn {
+  min-height: 48px; padding: 10px 18px; border-radius: 12px; cursor: pointer;
+  border: 1.5px solid var(--parchment-deep); background: var(--card); font-weight: 600; font-size: 17px;
+  touch-action: manipulation;
+}
+.btn:active { transform: scale(0.98); }
+.btn.primary { background: var(--burgundy); border-color: var(--burgundy); color: #fff; }
+.btn.danger { color: var(--danger); border-color: #e3b7b7; }
+.btn.big { min-height: 60px; padding: 14px 28px; font-size: 20px; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; }
+.row.center { justify-content: center; }
+
+/* Cards */
+.card {
+  background: var(--card); border-radius: 16px; padding: 18px 20px; margin-bottom: 14px;
+  border: 1px solid var(--parchment-deep); box-shadow: 0 1px 3px rgba(58, 29, 29, 0.06);
+}
+.card p { margin: 6px 0; }
+.section-title { font-size: 20px; margin: 22px 4px 10px; color: var(--muted); }
+
+/* Home */
+.home { text-align: center; }
+.home .card { max-width: 640px; margin-left: auto; margin-right: auto; }
+.reminder { background: var(--gold-soft); border-color: var(--gold); text-align: left; }
+.meal-label { display: block; font-family: var(--serif); font-size: 22px; margin-bottom: 8px; }
+.time-input {
+  font-size: 40px; font-family: var(--serif); padding: 8px 16px; border-radius: 12px;
+  border: 1.5px solid var(--parchment-deep); background: #fff; color: var(--ink); min-width: 220px; text-align: center;
+}
+.late p { text-align: left; }
+.status .label { color: var(--muted); margin: 0; }
+.meal-big { font-family: var(--serif); font-size: 56px; margin: 0; color: var(--burgundy); }
+.meal-big.later { color: var(--amber); }
+.note { color: var(--muted); }
+.confirm { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--parchment-deep); }
+
+/* Now */
+.banner {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  background: var(--burgundy); color: #fff; border-radius: 16px; padding: 14px 20px;
+}
+.banner.later { background: var(--amber); }
+.banner .label { display: block; font-size: 14px; opacity: 0.85; text-transform: uppercase; letter-spacing: 0.06em; }
+.banner .clock { display: block; font-family: var(--serif); font-size: 36px; font-variant-numeric: tabular-nums; }
+.banner .right { text-align: right; }
+.banner .sub { display: block; font-size: 15px; }
+.offer { background: var(--sage-soft); border-color: var(--sage); margin-top: 14px; }
+
+.do-now { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+.do-now .card { margin: 0; }
+.step { border-left: 8px solid var(--burgundy); }
+.step.track-gravy { border-left-color: var(--gold); }
+.step.track-both { border-left-color: var(--sage); }
+.step h2 { font-size: 26px; }
+.step .detail { font-size: 19px; }
+.step-head { display: flex; justify-content: space-between; font-size: 15px; color: var(--muted); margin-bottom: 4px; }
+.track-tag { font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+.track-roast .track-tag { color: var(--burgundy); }
+.track-gravy .track-tag { color: var(--gold); }
+.track-both .track-tag { color: var(--sage); }
+.status-overdue .step-time { color: var(--danger); font-weight: 700; }
+.waiting { text-align: center; }
+.waiting h2 { font-size: 28px; }
+
+.next-up { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.next-up li {
+  display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  background: var(--card); border-radius: 12px; padding: 14px 18px; border-left: 6px solid var(--burgundy);
+}
+.next-up li.track-gravy { border-left-color: var(--gold); }
+.next-up li.track-both { border-left-color: var(--sage); }
+.next-up .title { font-weight: 600; }
+.next-up .when { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+.sear-timer {
+  margin-top: 14px; border-radius: 16px; padding: 16px 20px; text-align: center;
+  background: var(--burgundy-deep); color: #fff;
+}
+.sear-timer.over { background: var(--danger); }
+.sear-timer .label { display: block; text-transform: uppercase; letter-spacing: 0.08em; font-size: 15px; opacity: 0.85; }
+.sear-timer .countdown { display: block; font-family: var(--serif); font-size: 88px; line-height: 1.05; font-variant-numeric: tabular-nums; }
+.sear-timer .sub { display: block; font-size: 16px; }
+
+@media (max-width: 520px) {
+  .banner .clock { font-size: 28px; }
+  .do-now { grid-template-columns: 1fr; }
+  .meal-big { font-size: 44px; }
+}
