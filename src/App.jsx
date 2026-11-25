@@ -12,6 +12,7 @@ import NowTab from './components/NowTab.jsx';
 import TimelineTab from './components/TimelineTab.jsx';
 import IngredientsTab from './components/IngredientsTab.jsx';
 import TempLog, { TempPad } from './components/TempLog.jsx';
+import HeroRoast from './components/HeroRoast.jsx';
 
 export default function App() {
   const [state, setState] = useState(() => loadState());
@@ -99,6 +100,16 @@ export default function App() {
     />
   );
 
+  let stage = 'raw';
+  if (state.searStart != null) stage = 'seared';
+  else if (state.pulled != null) stage = 'rested';
+  else if (state.ovenIn != null) stage = 'roasting';
+  const progress = sched && state.ovenIn != null
+    ? (now - state.ovenIn) / Math.max(1, sched.projectedMeal - state.ovenIn)
+    : 0;
+  const hot = state.ovenIn != null && !(sched && state.done.serve != null && now - state.done.serve > 30 * 60000);
+  const hero = <HeroRoast stage={stage} progress={progress} hot={hot} year={new Date(state.mealTime ?? now).getFullYear()} />;
+
   const activeIds = sched ? sched.steps.filter((s) => s.status === 'due' || s.status === 'overdue').map((s) => s.id) : [];
   const dueCount = activeIds.length;
 
@@ -114,7 +125,7 @@ export default function App() {
       )}
       {flash && <div className="flash" aria-hidden="true" />}
       <main className="content">
-        {tab === 'home' && <HomeTab state={state} sched={sched} now={now} actions={actions} />}
+        {tab === 'home' && <HomeTab state={state} sched={sched} now={now} actions={actions} hero={hero} />}
         {tab === 'now' && <NowTab state={state} sched={sched} now={now} actions={actions} pulseIds={activeIds} tempLog={tempLog} />}
         {tab === 'timeline' && <TimelineTab state={state} sched={sched} now={now} actions={actions} />}
         {tab === 'ingredients' && (
