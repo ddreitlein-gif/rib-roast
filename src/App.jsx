@@ -1,8 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { computeSchedule } from './lib/schedule.js';
 import { emptyState, markDone, undo, skip, startNow, skipTempering, logTemp, removeTemp } from './lib/state.js';
 import { loadState, saveState, storageAvailable } from './lib/storage.js';
 import { now as clockNow } from './lib/clock.js';
+import { unlockAudio, audioReady, playChime } from './lib/chime.js';
+import { requestWakeLock, isAwake, isSupported as wakeSupported, onWakeChange } from './lib/wakeLock.js';
+import { checkAlerts } from './lib/alerts.js';
 import TabBar from './components/TabBar.jsx';
 import HomeTab from './components/HomeTab.jsx';
 import NowTab from './components/NowTab.jsx';
@@ -28,11 +31,42 @@ export default function App() {
 
   const sched = useMemo(() => (state.mealTime != null ? computeSchedule(state, now) : null), [state, now]);
 
+  // Audio and wake lock can only start from a touch.  Start Cooking does it,
+  // and after a reload the first tap anywhere does it again.
+  const [unlocked, setUnlocked] = useState(false);
+  const [awake, setAwake] = useState(false);
+  const [flash, setFlash] = useState(false);
+  useEffect(() => onWakeChange(setAwake), []);
+  const unlock = () => {
+    unlockAudio();
+    requestWakeLock();
+    setUnlocked(true);
+  };
+  useEffect(() => {
+    if (unlocked) return undefined;
+    const onTap = () => { if (loadState().mealTime != null) unlock(); };
+    document.addEventListener('pointerdown', onTap, { once: true });
+    return () => document.removeEventListener('pointerdown', onTap);
+  }, [unlocked]);
+
+  // Chime when a step comes due, and again at 2 and 5 minutes if not done.
+  const chimed = useRef({});
+  useEffect(() => {
+    if (!sched) { chimed.current = {}; return; }
+    const { chime, next } = checkAlerts(sched.steps, now, chimed.current);
+    chimed.current = next;
+    if (chime) {
+      if (state.soundOn) playChime(chime);
+      setFlash(true);
+      setTimeout(() => setFlash(false), 1600);
+    }
+  }, [sched, now, state.soundOn]);
+
   const update = (fn) => setState((s) => fn(s));
   const actions = {
     setTab,
-    unlock: () => {},
-    testChime: () => {},
+    unlock,
+    testChime: () => { unlock(); setTimeout(() => playChime('normal'), 150); setTimeout(() => playChime('insistent'), 2300); },
     toggleSound: () => update((s) => ({ ...s, soundOn: !s.soundOn })),
     setMealTime: (t) => { update((s) => ({ ...s, mealTime: t })); setTab('now'); },
     startNow: () => { update((s) => startNow(s, clockNow())); setTab('now'); },
@@ -65,16 +99,23 @@ export default function App() {
     />
   );
 
-  const dueCount = sched ? sched.steps.filter((s) => s.status === 'due' || s.status === 'overdue').length : 0;
+  const activeIds = sched ? sched.steps.filter((s) => s.status === 'due' || s.status === 'overdue').map((s) => s.id) : [];
+  const dueCount = activeIds.length;
 
   return (
     <div className="app">
       {!storageAvailable() && (
         <div className="notice">Storage is unavailable in this browser, so progress will be lost if the page reloads.</div>
       )}
+      {state.mealTime != null && (!unlocked || (wakeSupported() && !awake)) && (
+        <button className="notice tap" onClick={unlock}>
+          {!unlocked ? 'Tap here to turn on the chime and keep the screen awake.' : 'The screen may sleep.  Tap here to keep it awake, or set Auto-Lock to Never.'}
+        </button>
+      )}
+      {flash && <div className="flash" aria-hidden="true" />}
       <main className="content">
         {tab === 'home' && <HomeTab state={state} sched={sched} now={now} actions={actions} />}
-        {tab === 'now' && <NowTab state={state} sched={sched} now={now} actions={actions} pulseIds={[]} tempLog={tempLog} />}
+        {tab === 'now' && <NowTab state={state} sched={sched} now={now} actions={actions} pulseIds={activeIds} tempLog={tempLog} />}
         {tab === 'timeline' && <TimelineTab state={state} sched={sched} now={now} actions={actions} />}
         {tab === 'ingredients' && (
           <IngredientsTab
