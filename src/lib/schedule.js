@@ -1,13 +1,12 @@
 // All scheduling lives here.  computeSchedule is pure: it takes the stored
 // state and the current time and returns the full schedule.
-import { STEPS, TEMP_STEPS } from '../data/steps.js';
+import { STEPS, TEMP_STEPS, SEAR_METHODS } from '../data/steps.js';
 import { MIN, PULL_F, READY_F, DEFAULT_OVEN_MIN, projectTime, readingsSince } from './projection.js';
 
 export const OVEN_IN_OFFSET = -255; // M minus 4 h 15 min
 export const FIRST_STEP_OFFSET = -300; // M minus 5 h
 export const SKIP_TEMPER_OFFSET = -275; // M minus 4 h 35 min
 export const OVERDUE_AFTER = 2 * MIN;
-export const SEAR_LEAD = 40; // minutes from pull to sear, minimum
 export const SEAR_TO_MEAL = 20;
 export const LONG_REST = 90;
 export const EARLIEST_MEAL_AFTER_PULL = 60;
@@ -52,7 +51,9 @@ export function computeSchedule(state, now) {
     projectedPull = Math.max(p.at, now);
   }
   const P = projectedPull;
-  const S = searStart ?? Math.max(P + SEAR_LEAD * MIN, mealTime - SEAR_TO_MEAL * MIN);
+  const method = SEAR_METHODS[state.searMethod] ? state.searMethod : 'oven';
+  const { lead, searMin } = SEAR_METHODS[method];
+  const S = searStart ?? Math.max(P + lead * MIN, mealTime - SEAR_TO_MEAL * MIN);
   const projectedMeal = S + SEAR_TO_MEAL * MIN;
   const anchors = { M: mealTime, O, P, S };
 
@@ -74,7 +75,11 @@ export function computeSchedule(state, now) {
     });
   };
 
-  for (const def of STEPS) {
+  for (const baseDef of STEPS) {
+    // A step may differ, or be left out (null), for the grill sear.
+    const variant = baseDef.variants ? baseDef.variants[method] : undefined;
+    if (variant === null) continue;
+    const def = variant ? { ...baseDef, ...variant } : baseDef;
     // Once S is recorded, steps after it are timed from the actual S (already
     // true because S === searStart).
     const dueAt = anchors[def.anchor] + def.offset * MIN;
@@ -139,6 +144,8 @@ export function computeSchedule(state, now) {
     projectedPull,
     pullBasis,
     searAt: S,
+    searMethod: method,
+    searMin,
     projectedMeal,
     restMin,
     latestTemp: latest,

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { clockTime, toTimeInput, fromTimeInput, defaultMealTime } from '../lib/format.js';
 import { isLateStart } from '../lib/schedule.js';
+import { SEAR_METHODS } from '../data/steps.js';
 
 export default function HomeTab({ state, sched, now, actions, hero }) {
   const started = state.mealTime != null;
@@ -78,6 +79,26 @@ export default function HomeTab({ state, sched, now, actions, hero }) {
           )}
         </div>
       )}
+
+
+      <div className="card sear-choice">
+        <p className="meal-label">Sear the roast on the</p>
+        <div className="segmented" role="radiogroup" aria-label="Sear method">
+          {Object.entries(SEAR_METHODS).map(([key, m]) => (
+            <button
+              key={key}
+              role="radio"
+              aria-checked={(state.searMethod || 'oven') === key}
+              className={`seg ${(state.searMethod || 'oven') === key ? 'on' : ''}`}
+              disabled={state.searStart != null}
+              onClick={() => actions.setSearMethod(key)}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
+        <p className="note small">{state.searStart != null ? 'The sear has started, so this can no longer change.' : 'You can change this any time before the sear.  The Now and Timeline tabs follow your choice.'}</p>
+      </div>
 
       {started && !editing && (
         <div className="card status">

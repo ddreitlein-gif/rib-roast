@@ -160,4 +160,11 @@ export const TEMP_STEPS = {
   },
 };
 
+// How the roast is seared.  lead: minimum minutes from pull to sear start
+// (heating the oven or grill).  searMin: length of the sear timer.
+export const SEAR_METHODS = {
+  oven: { label: 'Oven', lead: 40, searMin: 8 },
+  grill: { label: 'Grill', lead: 40, searMin: 8 },
+};
+
 export const ANCHOR_SETTERS = { 'oven-in': 'ovenIn', pull: 'pulled', sear: 'searStart' };

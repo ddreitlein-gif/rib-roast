@@ -1,7 +1,6 @@
 import { clockTime, clockTimeSeconds, relative, mmss } from '../lib/format.js';
 import StepCard from './StepCard.jsx';
 
-const SEAR_MS = 8 * 60 * 1000;
 const AFTER_PULL = new Set(['tent', 'drippings', 'gravy-prep', 'skillet', 'roux', 'wine', 'stock', 'simmer', 'hold', 'uncover', 'sear']);
 
 export default function NowTab({ state, sched, now, actions, pulseIds, tempLog }) {
@@ -21,7 +20,7 @@ export default function NowTab({ state, sched, now, actions, pulseIds, tempLog }
   const upcoming = sched.steps.filter((s) => s.status === 'pending').slice(0, 2);
   const lateBy = sched.warnings.find((w) => w.type === 'meal-later')?.by;
   const searing = state.searStart != null && state.done.crust == null;
-  const searLeft = state.searStart != null ? state.searStart + SEAR_MS - now : 0;
+  const searLeft = state.searStart != null ? state.searStart + sched.searMin * 60000 - now : 0;
 
   const handleDone = (s) => {
     // A required temperature check is completed by logging the reading.
@@ -54,7 +53,7 @@ export default function NowTab({ state, sched, now, actions, pulseIds, tempLog }
         <div className={`sear-timer ${searLeft <= 0 ? 'over' : ''}`}>
           <span className="label">Sear</span>
           <span className="countdown">{searLeft > 0 ? mmss(searLeft) : `${mmss(searLeft)} over`}</span>
-          <span className="sub">Check the crust at 0:00.  Remove when deeply browned, 6 to 10 minutes total.</span>
+          <span className="sub">Check the crust when the timer reaches 0:00.</span>
         </div>
       )}
 

@@ -251,3 +251,10 @@ body { background: radial-gradient(ellipse at top, #f8f0df 0%, var(--parchment) 
 .rehearsal .row { margin: 0; }
 .rehearsal .btn { min-height: 40px; padding: 6px 12px; font-size: 15px; }
 .rehearsal .btn { color: var(--ink); }
+
+/* Sear method choice */
+.segmented { display: inline-flex; border: 1.5px solid var(--burgundy); border-radius: 14px; overflow: hidden; }
+.seg { min-height: 56px; min-width: 140px; padding: 10px 24px; border: 0; background: var(--card); font-size: 20px; font-weight: 600; color: var(--burgundy); cursor: pointer; }
+.seg + .seg { border-left: 1.5px solid var(--burgundy); }
+.seg.on { background: var(--burgundy); color: #fff; }
+.seg:disabled { opacity: 0.6; cursor: default; }

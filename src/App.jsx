@@ -73,6 +73,7 @@ export default function App() {
     setMealTime: (t) => { update((s) => ({ ...s, mealTime: t })); setTab('now'); },
     startNow: () => { update((s) => startNow(s, clockNow())); setTab('now'); },
     skipTempering: () => { update((s) => skipTempering(s, clockNow())); setTab('now'); },
+    setSearMethod: (m) => update((s) => (s.searStart != null ? s : { ...s, searMethod: m })),
     checkDayBefore: () => update((s) => ({ ...s, dayBeforeChecked: true })),
     reset: () => update((s) => ({ ...emptyState(), checklist: s.checklist, soundOn: s.soundOn, dayBeforeChecked: s.dayBeforeChecked })),
     done: (id) => update((s) => markDone(s, id, clockNow())),
