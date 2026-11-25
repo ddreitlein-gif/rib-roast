@@ -140,3 +140,32 @@ button { font: inherit; color: inherit; }
   .do-now { grid-template-columns: 1fr; }
   .meal-big { font-size: 44px; }
 }
+
+/* Timeline */
+.timeline-head { margin: 4px 4px 12px; }
+.small { font-size: 15px; }
+.tl { list-style: none; margin: 0; padding: 0; }
+.tl-item { background: var(--card); border-radius: 12px; margin-bottom: 8px; border: 1px solid var(--parchment-deep); overflow: hidden; }
+.tl-row {
+  width: 100%; display: grid; grid-template-columns: 92px 18px 1fr auto; gap: 10px; align-items: center;
+  padding: 14px 16px; border: 0; background: none; text-align: left; cursor: pointer; min-height: 60px;
+}
+.tl-time { font-variant-numeric: tabular-nums; font-weight: 600; }
+.tl-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--burgundy); }
+.track-gravy .tl-dot { background: var(--gold); }
+.track-both .tl-dot { background: var(--sage); }
+.tl-title { font-weight: 600; }
+.tl-track { display: block; font-weight: 400; font-size: 14px; color: var(--muted); }
+.tl-status { font-size: 14px; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: var(--parchment); color: var(--muted); }
+.st-due { background: var(--burgundy); color: #fff; }
+.st-overdue { background: var(--danger); color: #fff; }
+.st-done { background: var(--sage-soft); color: #4b5a3c; }
+.st-skipped { background: var(--parchment-deep); }
+.status-done .tl-title, .status-skipped .tl-title { color: var(--muted); }
+.status-skipped .tl-title { text-decoration: line-through; }
+.tl-actions { padding: 0 16px 14px 136px; }
+@media (max-width: 600px) {
+  .tl-row { grid-template-columns: 76px 14px 1fr; }
+  .tl-status { grid-column: 3; justify-self: start; }
+  .tl-actions { padding-left: 16px; }
+}

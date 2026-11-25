@@ -6,6 +6,7 @@ import { now as clockNow } from './lib/clock.js';
 import TabBar from './components/TabBar.jsx';
 import HomeTab from './components/HomeTab.jsx';
 import NowTab from './components/NowTab.jsx';
+import TimelineTab from './components/TimelineTab.jsx';
 
 export default function App() {
   const [state, setState] = useState(() => loadState());
@@ -51,7 +52,7 @@ export default function App() {
       <main className="content">
         {tab === 'home' && <HomeTab state={state} sched={sched} now={now} actions={actions} />}
         {tab === 'now' && <NowTab state={state} sched={sched} now={now} actions={actions} pulseIds={[]} />}
-        {tab === 'timeline' && <p className="muted pad">The timeline is coming in the next step.</p>}
+        {tab === 'timeline' && <TimelineTab state={state} sched={sched} now={now} actions={actions} />}
         {tab === 'ingredients' && <p className="muted pad">The ingredients checklist is coming soon.</p>}
       </main>
       <TabBar tab={tab} setTab={setTab} badge={dueCount} />
