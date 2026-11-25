@@ -1,0 +1,9 @@
+{
+  "name": "Thanksgiving Prime Rib",
+  "short_name": "Prime Rib",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4ead7",
+  "theme_color": "#f4ead7",
+  "icons": [{ "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }]
+}
