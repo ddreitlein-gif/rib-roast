@@ -7,6 +7,7 @@ import TabBar from './components/TabBar.jsx';
 import HomeTab from './components/HomeTab.jsx';
 import NowTab from './components/NowTab.jsx';
 import TimelineTab from './components/TimelineTab.jsx';
+import IngredientsTab from './components/IngredientsTab.jsx';
 
 export default function App() {
   const [state, setState] = useState(() => loadState());
@@ -53,7 +54,13 @@ export default function App() {
         {tab === 'home' && <HomeTab state={state} sched={sched} now={now} actions={actions} />}
         {tab === 'now' && <NowTab state={state} sched={sched} now={now} actions={actions} pulseIds={[]} />}
         {tab === 'timeline' && <TimelineTab state={state} sched={sched} now={now} actions={actions} />}
-        {tab === 'ingredients' && <p className="muted pad">The ingredients checklist is coming soon.</p>}
+        {tab === 'ingredients' && (
+          <IngredientsTab
+            checklist={state.checklist}
+            toggle={(id) => update((s) => ({ ...s, checklist: { ...s.checklist, [id]: !s.checklist[id] } }))}
+            clearAll={() => update((s) => ({ ...s, checklist: {} }))}
+          />
+        )}
       </main>
       <TabBar tab={tab} setTab={setTab} badge={dueCount} />
     </div>

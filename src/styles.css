@@ -169,3 +169,16 @@ button { font: inherit; color: inherit; }
   .tl-status { grid-column: 3; justify-self: start; }
   .tl-actions { padding-left: 16px; }
 }
+
+/* Ingredients */
+.ing-head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin: 4px 4px 14px; }
+.ing-head h2 { margin: 0; }
+.ing-head .count { margin: 0; font-weight: 600; color: var(--burgundy); flex: 1; }
+.ing-groups { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); align-items: start; }
+.ing-group { margin: 0; }
+.ing-group ul { list-style: none; margin: 0; padding: 0; }
+.ing-group li + li { border-top: 1px solid var(--parchment); }
+.ing-group label { display: grid; grid-template-columns: 32px 1fr; gap: 4px 12px; padding: 12px 0; cursor: pointer; min-height: 52px; align-items: center; }
+.ing-group input { width: 26px; height: 26px; accent-color: var(--burgundy); margin: 0; }
+.ing-group .amount { grid-column: 2; color: var(--muted); font-size: 15px; }
+.ing-group .checked .name { color: var(--muted); text-decoration: line-through; }
